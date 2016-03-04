@@ -44,8 +44,8 @@ def server_socket():
 		if current_chat_ip == '':
 			current_chat_ip = incoming_ip
 
-		if incoming_ip != current_chat_ip:
-			continue
+#		if incoming_ip != current_chat_ip:
+#			continue
 		if data and data != "\n":
 			print "\n< Them >: " + data
 			prompt()
