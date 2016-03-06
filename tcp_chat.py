@@ -9,8 +9,28 @@ target_port = 0
 listen_on = 0
 msgs_to_send = []
 msgs_lock = threading.Lock()
+gui = None
 
 shutdownFlag = False
+
+class TCP_Chat(object):
+	def __init__(t_ip, t_port, l_on, gui_object):
+		global target_ip
+		global target_port
+		global listen_on
+		global gui
+
+		target_ip = t_ip
+		target_port = t_port
+		listen_on = l_on
+		gui = gui_object
+
+	def send_msg(msg):
+		client_send_message(msg)
+
+	def listen():
+		threading.Thread(target=server_socket)
+
 
 def sighandler(signum, frame):
 	print 'Signal Handler called with signal: %s ' % signum
@@ -27,6 +47,7 @@ def prompt():
 def server_socket():
 	global listen_on
 	global shutdownFlag
+	global gui
 
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -45,20 +66,25 @@ def server_socket():
 		if current_chat_ip == '':
 			current_chat_ip = incoming_ip
 
-		if incoming_ip != current_chat_ip:
-			conn.close()
-		else:
-			data = conn.recv(4096)
-			if data != "\n":
+
+		#if incoming_ip != current_chat_ip:
+		#	conn.close()
+		#else:
+		data = conn.recv(4096)
+		if data != "\n":
+			if gui:
+				#MODIFY TEXT VIEW HERE
+			else:
 				print "\n< Them >: " + data
 				prompt()
-			conn.close()
+		conn.close()
 
 	s.close()
 
 def client_send_message(msg):
 	global target_port
 	global target_ip
+	global gui
 
 	c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -72,6 +98,8 @@ def client_send_message(msg):
 		c.send(msg)
 	except Exception, e:
 		print 'Connection Refused. Endpoint not connected'
+
+	#MODIFY TEXT VIEW HERE
 
 	c.close()
 
@@ -125,5 +153,5 @@ def main():
 	server.join()
 	reader.join()
 
-if __name__ == '__main__':
-	main()
+#if __name__ == '__main__':
+#	main()
